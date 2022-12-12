@@ -19,8 +19,8 @@ def train_and_evaluate(config_path):
     random_state = config['base']['random_state']
     model_dir = config['model_dir']
 
-    alpha = config['estimator']['ElasticNet']['params']['alpha']
-    l1_ratio = config['estimator']['ElasticNet']['params']['l1_ratio']
+    alpha = config['estimators']['ElasticNet']['params']['alpha']
+    l1_ratio = config['estimators']['ElasticNet']['params']['l1_ratio']
 
     target = config['base']['target_col']
 
@@ -36,7 +36,7 @@ def train_and_evaluate(config_path):
     enr = ElasticNet(
         alpha= alpha,
         l1_ratio= l1_ratio,
-        random_state = 42
+        random_state = random_state
     )
     enr.fit(train_x, train_y)
 
@@ -47,6 +47,24 @@ def train_and_evaluate(config_path):
     print("RMSE : {}".format(rmse))
     print("MAE : {}".format(mae))
     print("R2 Score : {}".format(r2))
+
+    params_file = config['reports']['params']
+    scores_file = config['reports']['scores']
+
+    with open(params_file, 'w') as f:
+        scores = {
+            "RMSE" : rmse,
+            "MAE" : mae,
+            "R2_SCORE" : r2
+        }
+        json.dump(scores, f, indent=4)
+    
+    with open(scores_file, 'w') as f:
+        params = {
+            "alpha" : alpha,
+            "l1_ratio" : l1_ratio
+        }
+        json.dump(params, f, indent=4)
 
     os.makedirs(model_dir, exist_ok=True)
     model_path = os.path.join(model_dir, "model.joblib")
