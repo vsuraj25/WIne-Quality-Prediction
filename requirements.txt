@@ -5,7 +5,11 @@
 dvc
 dvc[gdrive]
 sklearn 
+scikit_learn
 pandas
 pytest
 tox
 flake8
+flask
+joblib
+gunicorn
