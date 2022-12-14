@@ -33,6 +33,8 @@ def train_and_evaluate(config_path):
     train_x = train.drop(target, axis = 1)
     test_x = test.drop(target, axis = 1)
 
+    print(train_x.columns)
+
     enr = ElasticNet(
         alpha= alpha,
         l1_ratio= l1_ratio,
