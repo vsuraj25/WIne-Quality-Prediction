@@ -4,7 +4,6 @@
 ## third party packages
 dvc
 dvc[gdrive]
-sklearn 
 scikit_learn
 pandas
 pytest
