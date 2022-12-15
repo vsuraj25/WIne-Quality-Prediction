@@ -8,9 +8,11 @@ import numpy as np
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.linear_model import ElasticNet
 from get_data import read_params
+from urllib.parse import urlparse
 import argparse
 import joblib
 import json 
+import mlflow
 
 def train_and_evaluate(config_path):
     config = read_params(config_path)
@@ -33,45 +35,46 @@ def train_and_evaluate(config_path):
     train_x = train.drop(target, axis = 1)
     test_x = test.drop(target, axis = 1)
 
-    print(train_x.columns)
+    mlflow_config = config["mlflow_cofig"]
+    remote_server_uri = mlflow_config["remote_server_uri"]
 
-    enr = ElasticNet(
-        alpha= alpha,
-        l1_ratio= l1_ratio,
-        random_state = random_state
-    )
-    enr.fit(train_x, train_y)
+    mlflow.set_tracking_uri(remote_server_uri)
+    mlflow.set_experiment(mlflow_config["experiment_name"])
 
-    predicted_qualities = enr.predict(test_x)
+    with mlflow.start_run(run_name = mlflow_config["run_name"]) as mlops_run:
 
-    rmse, mae, r2 = eval_metrics(test_y, predicted_qualities)
-    print("ElasticNet model (alpha = {}, l1_ratio = {}):".format(alpha,l1_ratio))
-    print("RMSE : {}".format(rmse))
-    print("MAE : {}".format(mae))
-    print("R2 Score : {}".format(r2))
+        enr = ElasticNet(
+            alpha= alpha,
+            l1_ratio= l1_ratio,
+            random_state = random_state
+        )
+        enr.fit(train_x, train_y)
 
-    params_file = config['reports']['params']
-    scores_file = config['reports']['scores']
+        predicted_qualities = enr.predict(test_x)
 
-    with open(params_file, 'w') as f:
-        scores = {
-            "RMSE" : rmse,
-            "MAE" : mae,
-            "R2_SCORE" : r2
-        }
-        json.dump(scores, f, indent=4)
-    
-    with open(scores_file, 'w') as f:
-        params = {
-            "alpha" : alpha,
-            "l1_ratio" : l1_ratio
-        }
-        json.dump(params, f, indent=4)
+        rmse, mae, r2 = eval_metrics(test_y, predicted_qualities)
+        print("ElasticNet model (alpha = {}, l1_ratio = {}):".format(alpha,l1_ratio))
+        print("RMSE : {}".format(rmse))
+        print("MAE : {}".format(mae))
+        print("R2 Score : {}".format(r2))
 
-    os.makedirs(model_dir, exist_ok=True)
-    model_path = os.path.join(model_dir, "model.joblib")
+        mlflow.log_param("alpha", alpha)
+        mlflow.log_param("l1_ratio", l1_ratio)
+        
+        mlflow.log_metric("rmse", rmse)
+        mlflow.log_metric("mae", mae)
+        mlflow.log_metric("r2", r2)
 
-    joblib.dump(enr, model_path)
+        tracking_url_type_store = urlparse(mlflow.get_artifact_uri()).scheme
+
+        if tracking_url_type_store != "file":
+            mlflow.sklearn.log_model(
+                enr, 
+                'model', 
+                registered_model_name = mlflow_config["registered_model_name"])
+
+        else:
+            mlflow.sklearn.load_model(enr, 'model')
 
 
 def eval_metrics(actual, pred):
