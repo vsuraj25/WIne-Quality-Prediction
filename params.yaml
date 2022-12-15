@@ -32,7 +32,7 @@ reports:
 
 webapp_model_dir: prediction_service/model/model.joblib
 
-mlflow_cofig: 
+mlflow_config: 
   artifacts_dir: artifacts
   experiment_name: ElasticNet regression
   run_name: mlops
