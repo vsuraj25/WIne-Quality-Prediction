@@ -24,8 +24,10 @@ stages:
     - data/processed/train_winequality.csv
     - data/processed/test_winequality.csv
     params:
-    - estimators.ElasticNet.params.alpha
-    - estimators.ElasticNet.params.l1_ratio
+    - estimators.RandomForestRegressor.params.max_depth
+    - estimators.RandomForestRegressor.params.min_samples_leaf
+    - estimators.RandomForestRegressor.params.min_samples_split
+    - estimators.RandomForestRegressor.params.n_estimators
 
     # Commenting out for mlflow
     # metrics:

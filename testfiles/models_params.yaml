@@ -1,0 +1,63 @@
+models:
+  linear_regression: True
+  ridge: True
+  lasso: True
+  elasticnet: True
+  svr: True
+  xgb: True
+  random_forest: True
+  knn_reg: True
+  decision_tree_reg: True
+
+params:
+  LinearRegression:
+    fit_intercept': [True, False]
+    n_jobs: [10,20,40,60,100]
+  
+  Ridge:
+    alpha: [0.2,0.4,0.7,1,1.5,2]
+    fit_intercept: [True, False]
+
+  Lasso:
+    alpha: [0.2,0.4,0.7,1,1.5,2]
+    fit_intercept: [True, False]
+
+  Ridge:
+    alpha: [0.2,0.4,0.7,1,1.5,2]
+    fit_intercept: [True, False]
+    l1_ratio: [0.2, 0.5, 0.7, 1]
+
+  SVR:
+    C: [0.5, 1, 1.5, 2]
+    epsilon: [0.1, 0.2, 0.3, 0.5, 1]
+    gamma: [0.2, 0.5, 0.7,1,1.5]
+
+  XGBoostRegressor: 
+    learning_rate : [0.1,0.2,0.3,0.35]
+    max_depth : [6,8,9]
+    gamma: [0.1, 0.3, 0.4, 0.5 ]
+    n_estimators: [10, 30, 50, 80, 100, 150]
+    max_depth: [2, 4, 6, 8, 10]
+    subsample: [0, 3, 6, 10, 20]
+
+  RandomForestRegressor: 
+    min_samples_leaf : [1, 2, 4, 6, 8]
+    max_depth : [0, 4, 6,8,9]
+    n_estimators: [10, 30, 50, 80, 100, 150]
+    max_depth: [2, 4, 6, 8, 10]
+    min_samples_split: [2, 4, 6, 8]
+
+  KNeighborsRegressor:
+    leaf_size: [20, 30, 50, 70]
+    n_neighbors: [5, 7, 9]
+    p: [1, 2, 3, 4, 5]
+
+  DecisionTreeRegressor: 
+    min_samples_leaf : [1, 2, 4, 6, 8]
+    max_depth : [0, 4, 6,8,9]
+    max_depth: [2, 4, 6, 8, 10]
+    min_samples_split: [2, 4, 6, 8]
+
+
+  
+

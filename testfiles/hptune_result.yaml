@@ -1,0 +1,33 @@
+best_params:
+  max_depth: 10
+  min_samples_leaf: 2
+  min_samples_split: 2
+  n_estimators: 80
+experiment_name: RandomForestRegressor
+metrics:
+  mae: !!python/object/apply:numpy.core.multiarray.scalar
+  - &id001 !!python/object/apply:numpy.dtype
+    args:
+    - f8
+    - false
+    - true
+    state: !!python/tuple
+    - 3
+    - <
+    - null
+    - null
+    - null
+    - -1
+    - -1
+    - 0
+  - !!binary |
+    No3tP80t3D8=
+  r2: !!python/object/apply:numpy.core.multiarray.scalar
+  - *id001
+  - !!binary |
+    BZ7pHGdj4D8=
+  rmse: !!python/object/apply:numpy.core.multiarray.scalar
+  - *id001
+  - !!binary |
+    QvCv9ZAR4j8=
+model_name: RandomForestRegressor

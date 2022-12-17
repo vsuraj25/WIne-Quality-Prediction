@@ -1,0 +1,20 @@
+2022-12-17-20-39-37:
+  best_params:
+    max_depth: 10
+    min_samples_leaf: 2
+    min_samples_split: 6
+    n_estimators: 100
+  metrics:
+    mae: 0.4511143192701573
+    r2: 0.49852591100729604
+    rmse: 0.5724650692238543
+2022-12-17-20-40-47:
+  best_params:
+    max_depth: 10
+    min_samples_leaf: 2
+    min_samples_split: 2
+    n_estimators: 150
+  metrics:
+    mae: 0.44716645488908446
+    r2: 0.5064099182500501
+    rmse: 0.5679471899331641

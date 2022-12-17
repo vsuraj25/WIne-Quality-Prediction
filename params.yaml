@@ -15,14 +15,16 @@ split_data:
   test_size: 0.20
 
 estimators:
-  ElasticNet:
+  RandomForestRegressor:
     params:
-      # alpha: 0.88
-      # l1_ratio: 0.89
+      max_depth: 10
+      min_samples_leaf: 2
+      min_samples_split: 2
+      n_estimators: 150
       # alpha: 0.5
       # l1_ratio: 0.4
-      alpha: 0.5
-      l1_ratio: 0.5
+      # alpha: 0.5
+      # l1_ratio: 0.5
 
 model_dir: saved_models
 
@@ -34,8 +36,10 @@ webapp_model_dir: prediction_service/model/model.joblib
 
 mlflow_config: 
   artifacts_dir: artifacts
-  experiment_name: ElasticNet regression
+  experiment_name: RandomForest regression
   run_name: mlops
-  registered_model_name: ElasticNetWineModel
+  registered_model_name: RandomForestWineModel
   remote_server_uri: http://127.0.0.1:1234
+
+
 

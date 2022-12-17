@@ -1,0 +1,6 @@
+RandomForestRegressor: 
+    min_samples_leaf : [1, 2, 4, 6, 8]
+    max_depth : [0, 4, 6,8,9]
+    n_estimators: [10, 30, 50, 80, 100, 150]
+    max_depth: [2, 4, 6, 8, 10]
+    min_samples_split: [2, 4, 6, 8]

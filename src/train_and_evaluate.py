@@ -6,7 +6,7 @@ import os
 import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-from sklearn.linear_model import ElasticNet
+from sklearn.ensemble import RandomForestRegressor
 from get_data import read_params
 from urllib.parse import urlparse
 import argparse
@@ -20,9 +20,12 @@ def train_and_evaluate(config_path):
     test_data_path = config['split_data']['test_path']
     random_state = config['base']['random_state']
     model_dir = config['model_dir']
+    web_model_dir = config["webapp_model_dir"]
 
-    alpha = config['estimators']['ElasticNet']['params']['alpha']
-    l1_ratio = config['estimators']['ElasticNet']['params']['l1_ratio']
+    max_depth = config['estimators']['RandomForestRegressor']['params']['max_depth']
+    min_samples_leaf = config['estimators']['RandomForestRegressor']['params']['min_samples_leaf']
+    min_samples_split = config['estimators']['RandomForestRegressor']['params']['min_samples_split']
+    n_estimators = config['estimators']['RandomForestRegressor']['params']['n_estimators']
 
     target = config['base']['target_col']
 
@@ -35,7 +38,7 @@ def train_and_evaluate(config_path):
     train_x = train.drop(target, axis = 1)
     test_x = test.drop(target, axis = 1)
 
-    mlflow_config = config["mlflow_cofig"]
+    mlflow_config = config["mlflow_config"]
     remote_server_uri = mlflow_config["remote_server_uri"]
 
     mlflow.set_tracking_uri(remote_server_uri)
@@ -43,23 +46,29 @@ def train_and_evaluate(config_path):
 
     with mlflow.start_run(run_name = mlflow_config["run_name"]) as mlops_run:
 
-        enr = ElasticNet(
-            alpha= alpha,
-            l1_ratio= l1_ratio,
-            random_state = random_state
+        rfr = RandomForestRegressor(
+            max_depth= max_depth,
+            min_samples_leaf= min_samples_leaf,
+            min_samples_split = min_samples_split,
+            n_estimators = n_estimators,
+            random_state= random_state
         )
-        enr.fit(train_x, train_y)
+        rfr.fit(train_x, train_y)
 
-        predicted_qualities = enr.predict(test_x)
+        predicted_qualities = rfr.predict(test_x)
+
+        joblib.dump(rfr, web_model_dir)
 
         rmse, mae, r2 = eval_metrics(test_y, predicted_qualities)
-        print("ElasticNet model (alpha = {}, l1_ratio = {}):".format(alpha,l1_ratio))
+        print(f"RandomForestRegressor model (max_depth = {max_depth}, min_samples_leaf = {min_samples_leaf}, min_samples_split = {min_samples_split}, n_estimators = {n_estimators})")
         print("RMSE : {}".format(rmse))
         print("MAE : {}".format(mae))
         print("R2 Score : {}".format(r2))
 
-        mlflow.log_param("alpha", alpha)
-        mlflow.log_param("l1_ratio", l1_ratio)
+        mlflow.log_param("max_depth", max_depth)
+        mlflow.log_param("min_samples_leaf", min_samples_leaf)
+        mlflow.log_param("min_samples_split", min_samples_split)
+        mlflow.log_param("n_estimators", n_estimators)
         
         mlflow.log_metric("rmse", rmse)
         mlflow.log_metric("mae", mae)
@@ -69,12 +78,12 @@ def train_and_evaluate(config_path):
 
         if tracking_url_type_store != "file":
             mlflow.sklearn.log_model(
-                enr, 
+                rfr, 
                 'model', 
                 registered_model_name = mlflow_config["registered_model_name"])
 
         else:
-            mlflow.sklearn.load_model(enr, 'model')
+            mlflow.sklearn.load_model(rfr, 'model')
 
 
 def eval_metrics(actual, pred):
@@ -91,5 +100,4 @@ if __name__ == '__main__':
     args = argparse.ArgumentParser()
     args.add_argument("--config", default="params.yaml")
     parsed_args = args.parse_args()
-    train_and_evaluate(config_path=parsed_args.config) 
-    
+    train_and_evaluate(config_path=parsed_args.config)
